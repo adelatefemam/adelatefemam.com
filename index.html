@@ -1171,11 +1171,17 @@ function deckFit(){
   if(window.innerWidth!==deckW){deckW=window.innerWidth;deckVh=window.innerHeight}
   else deckVh=Math.min(deckVh,window.innerHeight);
   var vh=deckVh,narrow=deckW<=600;
+  deckCards.forEach(function(el){el.style.minHeight=""});   /* measure natural heights first */
+  var mx=0;
   deckCards.forEach(function(el){
     var i=parseInt(el.style.getPropertyValue("--i"),10)||0;
     var top=68+(narrow?10:14)+i*(narrow?5:9);
-    el.classList.toggle("no-pin",el.offsetHeight>vh-top-10);
+    var np=el.offsetHeight>vh-top-10;
+    el.classList.toggle("no-pin",np);
+    if(!np)mx=Math.max(mx,el.offsetHeight);
   });
+  /* equal height for every pinned card, so a taller card underneath never peeks out below a shorter one */
+  if(mx)deckCards.forEach(function(el){if(!el.classList.contains("no-pin"))el.style.minHeight=mx+"px"});
 }
 deckFit();
 var deckT=null;

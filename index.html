@@ -155,9 +155,14 @@ html[lang=ar] .eyebrow{letter-spacing:0;font-size:.92rem;text-transform:none}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chips li{font-size:.84rem;color:var(--rose);border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 14px}
 .hv{position:relative}
-.hv-stage{position:relative;aspect-ratio:900/619}
-.hv-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .8s ease;filter:drop-shadow(0 20px 26px rgba(0,0,0,.5))}
-.hv-img.on{opacity:1}
+.hv-stage{position:relative;aspect-ratio:900/619;direction:ltr}
+.hv-slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .7s ease,visibility 0s linear .7s}
+.hv-slide.on{opacity:1;visibility:visible;transition:opacity .7s ease}
+.hv-nav{display:flex;align-items:center;gap:2px;direction:ltr}
+.hv-arrow{width:38px;height:38px;border-radius:50%;border:1px solid var(--line-2);background:rgba(255,255,255,.04);color:var(--text);display:grid;place-items:center;cursor:pointer;flex:none;transition:background .2s,border-color .2s}
+.hv-arrow:hover{background:rgba(233,184,163,.22);border-color:var(--rose)}
+.hv-arrow svg{width:18px;height:18px}
+@media(max-width:600px){.hv-arrow{width:34px;height:34px}.hv-dots button{width:18px}.hv-cap{font-size:.82rem}.hv-bar{gap:8px}}
 .hv-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:10px;padding-inline:4px}
 .hv-cap{font-size:.9rem;font-weight:700;color:var(--text);border-bottom:1px solid var(--line-2);padding-bottom:1px}
 .hv-cap:hover{border-color:var(--rose)}
@@ -217,9 +222,9 @@ html[lang=ar] .kicker{letter-spacing:0;text-transform:none;font-size:.92rem}
 .projs{display:block}
 .projs>.proj{position:sticky;top:calc(var(--hdr) + 14px + var(--i,0)*9px);z-index:calc(1 + var(--i,0));margin-bottom:clamp(44px,8vh,90px);background:rgba(41,22,26,.92);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-radius:26px;box-shadow:0 -14px 45px rgba(0,0,0,.55);isolation:isolate}
 .projs>.proj:last-child{margin-bottom:0}
-.projs>.proj.no-pin,.mini-grid>.mini.no-pin{position:static}
+.projs>.proj.no-pin{position:static}
 @media(max-width:600px){
-  .projs>.proj,.mini-grid>.mini{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(41,22,26,.97)}
+  .projs>.proj{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(41,22,26,.97)}
   .projs>.proj{top:calc(var(--hdr) + 10px + var(--i,0)*5px);margin-bottom:clamp(34px,6vh,70px);padding:14px;gap:14px}
   .proj-media{padding:10px}
   .projs>.proj h3{font-size:1.16rem;margin-bottom:8px}
@@ -234,7 +239,6 @@ html[lang=ar] .kicker{letter-spacing:0;text-transform:none;font-size:.92rem}
 
 /* animated laptop + phone mockup (the page screenshot scrolls inside the screens) */
 .mock{position:relative;container-type:inline-size;width:100%;aspect-ratio:900/619}
-.mini-media .mock{aspect-ratio:auto;align-self:stretch;justify-self:stretch}
 .mk-scr{position:relative;overflow:hidden;container-type:size;background:#fff}
 .mk-lap{position:absolute;left:0;top:50%;width:82%;transform:translateY(-52%);filter:drop-shadow(0 2.6cqw 3cqw rgba(0,0,0,.5))}
 .mk-lap .mk-scr{aspect-ratio:16/10;border:.9cqw solid #1b1b1f;border-radius:1.5cqw 1.5cqw 0 0}
@@ -242,11 +246,16 @@ html[lang=ar] .kicker{letter-spacing:0;text-transform:none;font-size:.92rem}
 .mk-base::before{content:"";position:absolute;left:50%;top:0;width:14%;height:.7cqw;transform:translateX(-50%);background:#6a6a71;border-radius:0 0 .7cqw .7cqw}
 .mk-ph{position:absolute;right:0;bottom:3%;width:22%;filter:drop-shadow(0 2cqw 2.6cqw rgba(0,0,0,.55))}
 .mk-ph .mk-scr{aspect-ratio:9/19.5;border:.8cqw solid #141417;border-radius:3.4cqw}
-.mk-pg{position:absolute;top:0;left:0;width:100%;height:auto;max-width:none;animation:mkScroll var(--d,40s) ease-in-out infinite;animation-play-state:paused}
-@media(hover:hover){.proj:hover .mk-pg,.mini:hover .mk-pg,.proj:focus-within .mk-pg,.mini:focus-within .mk-pg{animation-play-state:running;will-change:transform}}
-@media(hover:none){.mock.on .mk-pg{animation-play-state:running;will-change:transform}}
-@keyframes mkScroll{0%,10%{transform:translateY(0)}45%,55%{transform:translateY(calc(-100% + 100cqh))}90%,100%{transform:translateY(0)}}
-.mini--static{cursor:default}
+.mk-pg{position:absolute;top:0;left:0;width:100%;height:auto;max-width:none;transform:translate3d(0,0,0);backface-visibility:hidden;-webkit-user-drag:none;pointer-events:none}
+.mock{cursor:default;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;outline-offset:6px;border-radius:14px}
+.mock.done{cursor:pointer}
+.mock:focus-visible{outline:2px solid var(--rose)}
+.mock.playing .mk-pg{will-change:transform}
+/* replay badge: shown on the laptop screen once the page has scrolled to the end and snapped back to the top */
+.mk-replay{position:absolute;left:50%;bottom:7%;z-index:2;display:grid;place-items:center;width:max(34px,11cqw);aspect-ratio:1;border-radius:50%;background:rgba(18,8,10,.76);color:#fff;border:1px solid rgba(255,255,255,.38);opacity:0;transform:translateX(-50%) scale(.85);transition:opacity .3s,transform .3s,background .2s;pointer-events:none}
+.mk-replay svg{width:50%;height:50%}
+.mock.done:not(.playing) .mk-replay{opacity:1;transform:translateX(-50%) scale(1)}
+.mock.done:not(.playing):hover .mk-replay{background:var(--rose);color:#1a0b0e}
 
 /* more active stores (compact grid) */
 .stats-row{display:flex;flex-wrap:wrap;gap:14px;margin:-8px auto 30px;max-width:1100px}
@@ -261,23 +270,6 @@ html[lang=ar] .kicker{letter-spacing:0;text-transform:none;font-size:.92rem}
 }
 .more-eyebrow{text-align:center;color:var(--rose);font-size:.85rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin:clamp(48px,9vh,96px) 0 18px}
 html[lang=ar] .more-eyebrow{letter-spacing:0;text-transform:none;font-size:.92rem}
-.mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
-.mini{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:border-color .25s}
-.mini:hover{border-color:rgba(233,184,163,.45)}
-.mini-media{display:grid;place-items:center;aspect-ratio:3/2;margin:14px 14px 0;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.04);border-radius:14px;padding:10px}
-.mini-media>img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 12px 14px rgba(0,0,0,.4))}
-.mini-body{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:14px 14px 16px}
-.mini-cat{color:var(--rose);font-size:.8rem;font-weight:700}
-html[lang=ar] .mini-cat{font-size:.85rem}
-.mini-name{font-weight:800;font-size:1.05rem;line-height:1.3}
-.mini-desc{color:var(--muted);font-size:.86rem;line-height:1.6}
-.mini-visit{display:inline-flex;align-items:center;gap:7px;color:var(--rose);font-size:.92rem;font-weight:700;border:1px solid var(--line-2);border-radius:999px;padding:9px 16px;background:rgba(255,255,255,.03);transition:border-color .2s,background .2s}
-.mini:hover .mini-visit{border-color:var(--rose);background:rgba(233,184,163,.08)}
-@media(max-width:600px){
-  .mini-grid{display:block}
-  .mini-grid>.mini{position:sticky;top:calc(var(--hdr) + 10px + var(--i,0)*5px);z-index:calc(1 + var(--i,0));margin-bottom:clamp(30px,6vh,64px);background:rgba(41,22,26,.97);box-shadow:0 -14px 45px rgba(0,0,0,.55);isolation:isolate}
-  .mini-grid>.mini:last-child{margin-bottom:0}
-}
 
 /* why */
 .why{display:grid;grid-template-columns:.78fr 1.22fr;gap:36px;align-items:start}
@@ -395,17 +387,16 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.88rem;border-top:1px so
 /* touch devices / reduced transparency: solid surfaces instead of backdrop blur (desktop look unchanged) */
 @media(pointer:coarse),(prefers-reduced-transparency:reduce){
   .hdr{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(10,4,5,.95)}
-  .projs>.proj,.mini-grid>.mini{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(41,22,26,.97)}
+  .projs>.proj{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(41,22,26,.97)}
   .rev-btn{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(10,4,5,.92)}
   #lb{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(10,4,5,.96)}
 }
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .rv{opacity:1;transform:none;transition:none}
-  .hv-img{transition:none}
-  .svc:hover,.btn:hover,.social a:hover,.mini:hover{transform:none}
+  .hv-slide,.hv-slide.on{transition:none}
+  .svc:hover,.btn:hover,.social a:hover{transform:none}
   .logo-track{animation:none}
-  .mk-pg{animation:none}
   .logo-marquee{overflow-x:auto;-webkit-mask-image:none;mask-image:none}
   #waFloat{transition:none}
 }
@@ -458,20 +449,24 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.88rem;border-top:1px so
     </div>
     <div class="hv">
       <div class="hv-stage">
-        <img class="hv-img on" src="/img/hero-glowear.webp" fetchpriority="high" decoding="async" data-p="glowear" alt="Glo Wear Shopify store shown on a laptop and a phone" width="800" height="533" data-i18n-attr="alt:alt_p5">
-        <img class="hv-img" data-p="nala" decoding="async" data-src="/img/proj-nala.webp" data-srcset="/img/proj-nala-640.webp 640w, /img/proj-nala.webp 900w" data-sizes="(max-width:900px) calc(100vw - 48px), 661px" alt="NALA Kids Shopify store shown on a laptop and a phone" width="900" height="619" data-i18n-attr="alt:alt_p1">
-        <img class="hv-img" data-p="hibtam" decoding="async" data-src="/img/proj-hibtam.webp" data-srcset="/img/proj-hibtam-640.webp 640w, /img/proj-hibtam.webp 900w" data-sizes="(max-width:900px) calc(100vw - 48px), 661px" alt="HIBTAM Shopify store shown on a laptop and a phone" width="900" height="619" data-i18n-attr="alt:alt_p2">
-        <img class="hv-img" data-p="ciel" decoding="async" data-src="/img/proj-ciel.webp" data-srcset="/img/proj-ciel-640.webp 640w, /img/proj-ciel.webp 900w" data-sizes="(max-width:900px) calc(100vw - 48px), 661px" alt="CIEL Shopify store shown on a laptop and a phone" width="900" height="619" data-i18n-attr="alt:alt_p3">
-        <img class="hv-img" data-p="moveon" decoding="async" data-src="/img/proj-moveon.webp" data-srcset="/img/proj-moveon-640.webp 640w, /img/proj-moveon.webp 900w" data-sizes="(max-width:900px) calc(100vw - 48px), 661px" alt="MOVEON Shopify store shown on a laptop and a phone" width="900" height="619" data-i18n-attr="alt:alt_p4">
+        <div class="hv-slide on" data-p="glowear"><div class="mock" role="img" aria-label="Glo Wear Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p5"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" fetchpriority="high" src="/img/shots/glowear-d.webp" alt="" width="900" height="4200" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/glowear-m.webp" alt="" width="300" height="5500" decoding="async"></div></div></div></div>
+        <div class="hv-slide" data-p="nala"><div class="mock" role="img" aria-label="NALA Kids Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p1"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" data-src="/img/shots/nala-d.webp" alt="" width="900" height="2368" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" data-src="/img/shots/nala-m.webp" alt="" width="300" height="3210" decoding="async"></div></div></div></div>
+        <div class="hv-slide" data-p="hibtam"><div class="mock" role="img" aria-label="HIBTAM Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p2"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" data-src="/img/shots/hibtam-d.webp" alt="" width="900" height="4200" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" data-src="/img/shots/hibtam-m.webp" alt="" width="300" height="4696" decoding="async"></div></div></div></div>
+        <div class="hv-slide" data-p="ciel"><div class="mock" role="img" aria-label="CIEL Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p3"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" data-src="/img/shots/ciel-d.webp" alt="" width="900" height="4078" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" data-src="/img/shots/ciel-m.webp" alt="" width="300" height="5500" decoding="async"></div></div></div></div>
+        <div class="hv-slide" data-p="moveon"><div class="mock" role="img" aria-label="MOVEON Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p4"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" data-src="/img/shots/moveon-d.webp" alt="" width="900" height="3118" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" data-src="/img/shots/moveon-m.webp" alt="" width="300" height="3345" decoding="async"></div></div></div></div>
       </div>
       <div class="hv-bar">
         <a class="hv-cap" id="hvCap" href="#p-glowear">Glo Wear · Horizon theme</a>
-        <div class="hv-dots" role="group" aria-label="Featured projects" data-i18n-attr="aria-label:hv_group">
+        <div class="hv-nav">
+          <button class="hv-arrow prev" type="button" aria-label="Previous project" data-i18n-attr="aria-label:hv_prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <div class="hv-dots" role="group" aria-label="Featured projects" data-i18n-attr="aria-label:hv_group">
           <button type="button" aria-label="Glo Wear" aria-current="true"></button>
           <button type="button" aria-label="NALA Kids" aria-current="false"></button>
           <button type="button" aria-label="HIBTAM" aria-current="false"></button>
           <button type="button" aria-label="CIEL" aria-current="false"></button>
           <button type="button" aria-label="MOVEON" aria-current="false"></button>
+        </div>
+          <button class="hv-arrow next" type="button" aria-label="Next project" data-i18n-attr="aria-label:hv_next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
         </div>
       </div>
     </div>
@@ -543,7 +538,7 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.88rem;border-top:1px so
     <div class="projs">
 
       <article class="proj" id="p-glowear" style="--i:0">
-        <div class="proj-media"><div class="mock" style="--d:49s" role="img" aria-label="Glo Wear Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p5"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/glowear-d.webp" alt="" width="900" height="4200" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/glowear-m.webp" alt="" width="300" height="5500" loading="lazy" decoding="async"></div></div></div></div>
+        <div class="proj-media"><div class="mock" role="img" aria-label="Glo Wear Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p5"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/glowear-d.webp" alt="" width="900" height="4200" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/glowear-m.webp" alt="" width="300" height="5500" loading="lazy" decoding="async"></div></div></div></div>
         <div class="proj-body">
           <p class="kicker" data-i18n="p5_cat">Women's fashion &middot; Egypt</p>
           <h3 data-i18n="p5_t">Glo Wear — Shopify Store Redesign &amp; Development</h3>
@@ -555,7 +550,7 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.88rem;border-top:1px so
       </article>
 
       <article class="proj" id="p-nala" style="--i:1">
-        <div class="proj-media"><div class="mock" style="--d:24s" role="img" aria-label="NALA Kids Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p1"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/nala-d.webp" alt="" width="900" height="2368" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/nala-m.webp" alt="" width="300" height="3210" loading="lazy" decoding="async"></div></div></div></div>
+        <div class="proj-media"><div class="mock" role="img" aria-label="NALA Kids Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p1"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/nala-d.webp" alt="" width="900" height="2368" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/nala-m.webp" alt="" width="300" height="3210" loading="lazy" decoding="async"></div></div></div></div>
         <div class="proj-body">
           <p class="kicker" data-i18n="p1_cat">Kidswear &middot; Egypt</p>
           <h3 data-i18n="p1_t">NALA Kids — Shopify Store Development &amp; Arabic RTL Customization</h3>
@@ -567,7 +562,7 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.88rem;border-top:1px so
       </article>
 
       <article class="proj" id="p-hibtam" style="--i:2">
-        <div class="proj-media"><div class="mock" style="--d:49s" role="img" aria-label="HIBTAM Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p2"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/hibtam-d.webp" alt="" width="900" height="4200" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/hibtam-m.webp" alt="" width="300" height="4696" loading="lazy" decoding="async"></div></div></div></div>
+        <div class="proj-media"><div class="mock" role="img" aria-label="HIBTAM Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p2"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/hibtam-d.webp" alt="" width="900" height="4200" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/hibtam-m.webp" alt="" width="300" height="4696" loading="lazy" decoding="async"></div></div></div></div>
         <div class="proj-body">
           <p class="kicker" data-i18n="p2_cat">Women's fashion &middot; Egypt</p>
           <h3 data-i18n="p2_t">HIBTAM — Shopify Store Development &amp; Custom Product Experience</h3>
@@ -579,7 +574,7 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.88rem;border-top:1px so
       </article>
 
       <article class="proj" id="p-ciel" style="--i:3">
-        <div class="proj-media"><div class="mock" style="--d:48s" role="img" aria-label="CIEL Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p3"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/ciel-d.webp" alt="" width="900" height="4078" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/ciel-m.webp" alt="" width="300" height="5500" loading="lazy" decoding="async"></div></div></div></div>
+        <div class="proj-media"><div class="mock" role="img" aria-label="CIEL Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p3"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/ciel-d.webp" alt="" width="900" height="4078" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/ciel-m.webp" alt="" width="300" height="5500" loading="lazy" decoding="async"></div></div></div></div>
         <div class="proj-body">
           <p class="kicker" data-i18n="p3_cat">Women's fashion &middot; Egypt</p>
           <h3 data-i18n="p3_t">CIEL — Shopify Store Development &amp; Product Color Navigation</h3>
@@ -591,7 +586,7 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.88rem;border-top:1px so
       </article>
 
       <article class="proj" id="p-moveon" style="--i:4">
-        <div class="proj-media"><div class="mock" style="--d:35s" role="img" aria-label="MOVEON Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p4"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/moveon-d.webp" alt="" width="900" height="3118" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/moveon-m.webp" alt="" width="300" height="3345" loading="lazy" decoding="async"></div></div></div></div>
+        <div class="proj-media"><div class="mock" role="img" aria-label="MOVEON Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_p4"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/moveon-d.webp" alt="" width="900" height="3118" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/moveon-m.webp" alt="" width="300" height="3345" loading="lazy" decoding="async"></div></div></div></div>
         <div class="proj-body">
           <p class="kicker" data-i18n="p4_cat">Activewear / sportswear · Kuwait</p>
           <h3 data-i18n="p4_t">MOVEON — Shopify Store Development &amp; Color-Specific Product Images</h3>
@@ -605,61 +600,68 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.88rem;border-top:1px so
     </div>
 
     <p class="more-eyebrow rv" data-i18n="more_stores">More Active Stores</p>
-    <div class="mini-grid">
-      <a class="mini" href="https://myflo.online/" target="_blank" rel="noopener" style="--i:0">
-        <span class="mini-media"><div class="mock" style="--d:25s" role="img" aria-label="Flo Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_f1"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/flo-d.webp" alt="" width="900" height="2409" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/flo-m.webp" alt="" width="300" height="4865" loading="lazy" decoding="async"></div></div></div></span>
-        <span class="mini-body">
-          <span class="mini-cat" data-i18n="c_f1">Women's fashion &middot; Egypt</span>
-          <span class="mini-name">Flo</span>
-          <span class="mini-desc" data-i18n="d_f1">Flo is your destination for women's fashion that combines elegance with comfort.</span>
-          <span class="mini-visit"><span data-i18n="visit">Visit live store</span><span aria-hidden="true">&#8599;</span></span>
-        </span>
-      </a>
-      <a class="mini" href="https://thrivefit-eg.com/" target="_blank" rel="noopener" style="--i:1">
-        <span class="mini-media"><div class="mock" style="--d:32s" role="img" aria-label="Thrive Fit Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_f2"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/thrivefit-d.webp" alt="" width="900" height="2921" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/thrivefit-m.webp" alt="" width="300" height="4432" loading="lazy" decoding="async"></div></div></div></span>
-        <span class="mini-body">
-          <span class="mini-cat" data-i18n="c_f2">Women's sportswear &middot; Egypt</span>
-          <span class="mini-name">Thrive Fit</span>
-          <span class="mini-desc" data-i18n="d_f2">Thrive Fit is your brand for sports to empower women to move with confidence. We use high-quality fabrics to provide the ventilation and comfort required for your optimal performance.</span>
-          <span class="mini-visit"><span data-i18n="visit">Visit live store</span><span aria-hidden="true">&#8599;</span></span>
-        </span>
-      </a>
-      <a class="mini" href="https://versus7.myshopify.com/" target="_blank" rel="noopener" style="--i:2">
-        <span class="mini-media"><div class="mock" style="--d:30s" role="img" aria-label="Versus Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_f3"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/versus-d.webp" alt="" width="900" height="2777" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/versus-m.webp" alt="" width="300" height="4401" loading="lazy" decoding="async"></div></div></div></span>
-        <span class="mini-body">
-          <span class="mini-cat" data-i18n="c_f3">Men's fashion &middot; Egypt</span>
-          <span class="mini-name">Versus</span>
-          <span class="mini-desc" data-i18n="d_f3">We are a clothing brand designed for Young people striving for self-improvement and searching for something that expresses them who value simplicity. and Our products blend comfort with minimalist design, To give you the required equation</span>
-          <span class="mini-visit"><span data-i18n="visit">Visit live store</span><span aria-hidden="true">&#8599;</span></span>
-        </span>
-      </a>
-      <a class="mini" href="https://littlebuddywear.com/" target="_blank" rel="noopener" style="--i:3">
-        <span class="mini-media"><div class="mock" style="--d:41s" role="img" aria-label="Little Buddy Wear Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_f4"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/littlebuddy-d.webp" alt="" width="900" height="3613" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/littlebuddy-m.webp" alt="" width="300" height="3898" loading="lazy" decoding="async"></div></div></div></span>
-        <span class="mini-body">
-          <span class="mini-cat" data-i18n="c_f4">Kidswear &middot; Kuwait</span>
-          <span class="mini-name">Little Buddy Wear</span>
-          <span class="mini-desc" data-i18n="d_f4">Little Buddy Dressing little ones in comfort, color, and joy. Made for play, hugs, and everyday adventures.</span>
-          <span class="mini-visit"><span data-i18n="visit">Visit live store</span><span aria-hidden="true">&#8599;</span></span>
-        </span>
-      </a>
-          <div class="mini mini--static" style="--i:4">
-        <span class="mini-media"><div class="mock" style="--d:34s" role="img" aria-label="JAMILA Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_j1"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/jamila-d.webp" alt="" width="900" height="3088" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/jamila-m.webp" alt="" width="300" height="3321" loading="lazy" decoding="async"></div></div></div></span>
-        <span class="mini-body">
-          <span class="mini-cat" data-i18n="c_j1">Women's fashion</span>
-          <span class="mini-name">JAMILA</span>
-          <span class="mini-desc" data-i18n="d_j1">Shopify store built on the Kalles theme with custom sections for a clean, elegant shopping experience.</span>
-        </span>
-  </div>
-      <div class="mini mini--static" style="--i:1">
-        <span class="mini-media"><div class="mock" style="--d:41s" role="img" aria-label="Mirele Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_m1"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/mirele-d.webp" alt="" width="900" height="3556" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/mirele-m.webp" alt="" width="300" height="3946" loading="lazy" decoding="async"></div></div></div></span>
-        <span class="mini-body">
-          <span class="mini-cat" data-i18n="c_m1">Streetwear</span>
-          <span class="mini-name">Mirele</span>
-          <span class="mini-desc" data-i18n="d_m1">Shopify store for a hoodies and streetwear brand, designed around bold visuals and easy browsing.</span>
-        </span>
-      </div>
+    <div class="projs projs-more">
+
+      <article class="proj" id="p-flo" style="--i:0">
+        <div class="proj-media"><div class="mock" role="img" aria-label="Flo Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_f1"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/flo-d.webp" alt="" width="900" height="2409" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/flo-m.webp" alt="" width="300" height="4865" loading="lazy" decoding="async"></div></div></div></div>
+        <div class="proj-body">
+          <p class="kicker" data-i18n="c_f1">Women's fashion &middot; Egypt</p>
+          <h3>Flo</h3>
+          <p class="desc" data-i18n="d_f1">Flo is your destination for women's fashion that combines elegance with comfort.</p>
+          <a class="btn btn-ghost" href="https://myflo.online/" target="_blank" rel="noopener"><span data-i18n="visit">Visit live store</span><span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+
+      <article class="proj" id="p-thrivefit" style="--i:1">
+        <div class="proj-media"><div class="mock" role="img" aria-label="Thrive Fit Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_f2"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/thrivefit-d.webp" alt="" width="900" height="2921" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/thrivefit-m.webp" alt="" width="300" height="4432" loading="lazy" decoding="async"></div></div></div></div>
+        <div class="proj-body">
+          <p class="kicker" data-i18n="c_f2">Women's sportswear &middot; Egypt</p>
+          <h3>Thrive Fit</h3>
+          <p class="desc" data-i18n="d_f2">Thrive Fit is your brand for sports to empower women to move with confidence. We use high-quality fabrics to provide the ventilation and comfort required for your optimal performance.</p>
+          <a class="btn btn-ghost" href="https://thrivefit-eg.com/" target="_blank" rel="noopener"><span data-i18n="visit">Visit live store</span><span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+
+      <article class="proj" id="p-versus" style="--i:2">
+        <div class="proj-media"><div class="mock" role="img" aria-label="Versus Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_f3"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/versus-d.webp" alt="" width="900" height="2777" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/versus-m.webp" alt="" width="300" height="4401" loading="lazy" decoding="async"></div></div></div></div>
+        <div class="proj-body">
+          <p class="kicker" data-i18n="c_f3">Men's fashion &middot; Egypt</p>
+          <h3>Versus</h3>
+          <p class="desc" data-i18n="d_f3">We are a clothing brand designed for Young people striving for self-improvement and searching for something that expresses them who value simplicity. and Our products blend comfort with minimalist design, To give you the required equation</p>
+          <a class="btn btn-ghost" href="https://versus7.myshopify.com/" target="_blank" rel="noopener"><span data-i18n="visit">Visit live store</span><span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+
+      <article class="proj" id="p-littlebuddy" style="--i:3">
+        <div class="proj-media"><div class="mock" role="img" aria-label="Little Buddy Wear Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_f4"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/littlebuddy-d.webp" alt="" width="900" height="3613" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/littlebuddy-m.webp" alt="" width="300" height="3898" loading="lazy" decoding="async"></div></div></div></div>
+        <div class="proj-body">
+          <p class="kicker" data-i18n="c_f4">Kidswear &middot; Kuwait</p>
+          <h3>Little Buddy Wear</h3>
+          <p class="desc" data-i18n="d_f4">Little Buddy Dressing little ones in comfort, color, and joy. Made for play, hugs, and everyday adventures.</p>
+          <a class="btn btn-ghost" href="https://littlebuddywear.com/" target="_blank" rel="noopener"><span data-i18n="visit">Visit live store</span><span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+
+      <article class="proj" id="p-jamila" style="--i:4">
+        <div class="proj-media"><div class="mock" role="img" aria-label="JAMILA Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_j1"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/jamila-d.webp" alt="" width="900" height="3088" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/jamila-m.webp" alt="" width="300" height="3321" loading="lazy" decoding="async"></div></div></div></div>
+        <div class="proj-body">
+          <p class="kicker" data-i18n="c_j1">Women's fashion</p>
+          <h3>JAMILA</h3>
+          <p class="desc" data-i18n="d_j1">Shopify store built on the Kalles theme with custom sections for a clean, elegant shopping experience.</p>
+        </div>
+      </article>
+
+      <article class="proj" id="p-mirele" style="--i:5">
+        <div class="proj-media"><div class="mock" role="img" aria-label="Mirele Shopify store shown on a laptop and a phone" data-i18n-attr="aria-label:alt_m1"><div class="mk-lap"><div class="mk-scr"><img class="mk-pg" src="/img/shots/mirele-d.webp" alt="" width="900" height="3556" loading="lazy" decoding="async"></div><div class="mk-base"></div></div><div class="mk-ph"><div class="mk-scr"><img class="mk-pg" src="/img/shots/mirele-m.webp" alt="" width="300" height="3946" loading="lazy" decoding="async"></div></div></div></div>
+        <div class="proj-body">
+          <p class="kicker" data-i18n="c_m1">Streetwear</p>
+          <h3>Mirele</h3>
+          <p class="desc" data-i18n="d_m1">Shopify store for a hoodies and streetwear brand, designed around bold visuals and easy browsing.</p>
+        </div>
+      </article>
+
     </div>
-        <p class="note rv" data-i18n="work_note">Descriptions reflect the work I implemented during each project. The store owners may have updated their stores since.</p>
+    <p class="note rv" data-i18n="work_note">Descriptions reflect the work I implemented during each project. The store owners may have updated their stores since.</p>
   </div>
 </section>
 
@@ -858,7 +860,7 @@ var META={
   en:{title:"Adel Atef Emam | Shopify Developer",desc:"Shopify store design and development for growing brands. Explore real storefront projects, theme customization, product presentation, and Arabic RTL development."},
   ar:{title:"عادل عاطف إمام | مطور شوبيفاي",desc:"تصميم وتطوير متاجر شوبيفاي للبراندات النامية، مع تخصيص الثيمات وتحسين عرض المنتجات ودعم العربية واتجاه RTL حسب احتياجات المشروع."}
 };
-var AR={"c_j1": "أزياء نسائية", "d_j1": "متجر شوبيفاي على ثيم Kalles مع سكاشن مخصصة لتجربة شراء أنيقة وبسيطة.", "alt_j1": "متجر JAMILA على شوبيفاي معروض على لابتوب وموبايل", "c_m1": "ستريت وير", "d_m1": "متجر شوبيفاي لبراند هوديز وستريت وير، متصمم حوالين صور قوية وتصفح سهل.", "alt_m1": "متجر Mirele على شوبيفاي معروض على لابتوب وموبايل","pk3_name":"تطوير مخصص","pk2_name":"إعادة تصميم المتجر","pk1_name":"متجر جديد","pk_eyebrow":"الباقات","pk_h2":"اختار اللي يناسب براندك","pk_sub":"كل متجر مختلف، فالسعر النهائي بيعتمد على نطاق المشروع والتخصيصات اللي محتاجها.","pk_badge":"الأكثر طلبا","pk1_desc":"للبراندات اللي بتطلق متجرها على شوبيفاي.","pk_from":"بداية من","pk1_amt":"<bdi>7,000 جنيه</bdi>","pk1_note":"السعر النهائي بيعتمد على التخصيصات.","pk1_time":"جاهز عادة خلال 7–10 أيام.","pk1_f1":"تصميم المتجر وإعداده بالكامل","pk1_f2":"المنتجات والمجموعات","pk1_f3":"إعداد الدفع والشحن","pk1_f4":"متوافق مع الموبايل","pk1_f5":"تدريب على إدارة المتجر","pk1_f6":"30 يوم دعم لإصلاح الأخطاء","pk_cta1":"ابدأ دلوقتي","pk2_desc":"للبراندات اللي عندها متجر على شوبيفاي بالفعل.","pk2_amt":"حسب نطاق المشروع.","pk2_note":"بيتحدد السعر بعد مراجعة متجرك الحالي.","pk2_f1":"مراجعة متجرك الحالي","pk2_f2":"تصميم جديد للصفحات اللي تختارها","pk2_f3":"تحسين السرعة والموبايل","pk2_f4":"المنتجات والطلبات بتفضل زي ما هي","pk2_f5":"30 يوم دعم لإصلاح الأخطاء","pk_cta2":"اطلب عرض سعر","pk3_desc":"للمتطلبات الخاصة ومشاريع شوبيفاي المعقدة.","pk3_amt":"عرض سعر مخصص.","pk3_note":"بيتحدد السعر بعد مراجعة متطلباتك.","pk3_f1":"تصميم مخصص بالكامل","pk3_f2":"أقسام ومميزات مخصصة بالكود","pk3_f3":"التكاملات ونقل المتجر","pk3_f4":"تدريب على إدارة المتجر","pk3_f5":"30 يوم دعم لإصلاح الأخطاء","pk_support":"30 يوم دعم لإصلاح الأخطاء مشمولة. الميزات الجديدة وتغييرات التصميم والطلبات الإضافية بتتسعر بشكل منفصل.","pk_costs":"ثيمات شوبيفاي المدفوعة والتطبيقات والخدمات الخارجية مش مشمولة في أتعاب التنفيذ، إلا لو اتذكر صراحة في عرض السعر.","skip":"تخطي إلى المحتوى","brand_role":"مطور شوبيفاي","nav_services":"الخدمات","nav_work":"أعمال مختارة","nav_process":"خطوات التنفيذ","nav_faq":"الأسئلة الشائعة","wa_short":"واتساب","menu":"القائمة","hero_eyebrow":"مطور شوبيفاي","hero_h1":"متاجر شوبيفاي احترافية تناسب البراند بتاعك","hero_lead":"بصمم وبطور متاجر شوبيفاي تناسب هوية البراند واحتياجاته، مع عرض واضح للمنتجات، وتصميم متوافق مع الموبايل، وإمكانية تنفيذ تخصيصات برمجية حسب احتياج المشروع.","hero_cred":"عندي خبرة عملية في بناء متاجر لبراندات الفاشون، وبقدر أناقش مشاريع أنشطة مختلفة في التجارة الإلكترونية حسب متطلبات كل مشروع.","cta_primary":"ناقش براندك على واتساب","cta_secondary":"شوف نماذج من أعمالي","chip1":"أعمال في التجارة الإلكترونية للفاشون","chip2":"مفتوح لأي نشاط تجاري","chip3":"عربي وإنجليزي · دعم RTL","hv_group":"المشاريع المختارة","alt_p1":"متجر NALA Kids على شوبيفاي معروض على لابتوب وموبايل","alt_p2":"متجر HIBTAM على شوبيفاي معروض على لابتوب وموبايل","alt_p3":"متجر CIEL على شوبيفاي معروض على لابتوب وموبايل","alt_p4":"متجر MOVEON على شوبيفاي معروض على لابتوب وموبايل","svc_eyebrow":"الخدمات","svc_h2":"إيه اللي هتحصل عليه","svc_sub":"تصميم وتطوير متجر شوبيفاي متكامل، مبني على هوية البراند ومنتجاته.","s1t":"إعداد متجر شوبيفاي","s1a":"تجهيز أساس المتجر وإعداداته.","s1b":"إعداد الثيم والصفحات الأساسية للمتجر.","s1c":"التجهيز للإطلاق حسب النطاق المتفق عليه.","s2t":"تصميم متجر يعبر عن البراند","s2a":"تخصيص الثيم ليناسب هوية البراند.","s2b":"مظهر بصري متناسق.","s2c":"تجربة متوافقة مع كل الأجهزة.","s3t":"عرض المنتجات","s3a":"تنظيم واضح للمنتجات والتصنيفات.","s3b":"تخصيص صفحة المنتج عند الحاجة.","s3c":"تحسين عرض الأنواع والألوان حسب الحاجة.","s4t":"تخصيص ثيمات شوبيفاي","s4a":"تعديل أقسام الثيم الحالية.","s4b":"إضافة أو تعديل أقسام بالكود عند الضرورة.","s4c":"تطويع المتجر ليناسب احتياجات البراند.","s5t":"دعم العربية واتجاه RTL","s5a":"دعم المتجر باللغة العربية عند الحاجة.","s5b":"ضبط التصميم لاتجاه الكتابة من اليمين لليسار.","s5c":"تحسين الخطوط وتوافق الثيم.","s6t":"التجهيز للإطلاق","s6a":"اختبار وظائف المتجر المتفق عليها.","s6b":"مراجعة تجربة الاستخدام على الموبايل.","s6c":"تسليم المتجر وشرح طريقة إدارته.","svc_note":"نطاق كل مشروع بيتحدد بشكل نهائي في عرض السعر.","work_eyebrow":"أعمال مختارة","work_h2":"متاجر شوبيفاي حقيقية نفذتها","work_sub":"الفاشون هو المجال اللي عندي فيه أقوى نماذج أعمال، وبناقش كمان مشاريع شوبيفاي في مجالات تانية من التجارة الإلكترونية.","l_theme":"الثيم","l_role":"دوري","role_scratch":"بناء المتجر بالكامل من الصفر","role_redesign":"إعادة تصميم المتجر وتطويره","visit":"زيارة المتجر","p1_cat":"أزياء أطفال · مصر","p1_t":"NALA Kids — تطوير متجر شوبيفاي ودعم العربية واتجاه RTL","p1_d":"أنشأت متجر NALA Kids من البداية باستخدام Horizon، مع دعم اللغة العربية واتجاه RTL، وتغيير الخط بدون تطبيق إضافي، وتخصيص أجزاء عديدة من الثيم بالكود.","p1_f1":"دعم العربية + RTL","p1_f2":"تغيير الخط بدون تطبيق إضافي","p2_cat":"أزياء نسائية · مصر","p2_t":"HIBTAM — تطوير متجر شوبيفاي وتجربة منتج مخصصة","p2_d":"أنشأت متجر HIBTAM من البداية باستخدام Horizon، مع تخصيص أجزاء متعددة من الثيم بالكود، وربط ألوان المنتج الواحد، ودعم اللغة العربية واتجاه RTL.","p2_f1":"ربط ألوان المنتج الواحد","p2_f2":"دعم العربية + RTL","p3_cat":"أزياء نسائية · مصر","p3_t":"CIEL — تطوير متجر شوبيفاي وتنقل سهل بين ألوان المنتج","p3_d":"أنشأت متجر CIEL من البداية باستخدام Horizon، مع تخصيص أجزاء عديدة من الثيم بالكود وربط ألوان المنتج الواحد لتسهيل الانتقال بين الألوان.","p3_f1":"ربط ألوان المنتج الواحد","p3_f2":"تخصيص الثيم بالكود","p4_cat":"ملابس رياضية · الكويت","p4_t":"MOVEON — تطوير متجر شوبيفاي وصور منتجات مخصصة حسب اللون","p4_d":"أنشأت متجر MOVEON من البداية باستخدام Minimog، مع تخصيص عرض صور المنتجات لفصل الصور حسب اللون المختار.","p4_f1":"فصل صور المنتج حسب اللون","work_note":"الوصف بيعكس الشغل اللي نفذته أثناء كل مشروع، وممكن أصحاب المتاجر يكونوا عدلوا في متاجرهم بعد كده.","why_eyebrow":"ليه تشتغل معايا","why_h2":"طريقة عملية في بناء متجرك","me_name":"عادل عاطف إمام","me_role":"مطور شوبيفاي","me_loc":"من مصر · بشتغل مع براندات في مصر والخليج","alt_me":"عادل عاطف إمام","w1":"إعداد متجر شوبيفاي بالكامل من البداية للنهاية.","w2":"خبرة في متاجر براندات فاشون حقيقية.","w3":"تخصيص الثيم حسب احتياج البراند.","w4":"تحسينات عملية بالكود عند الحاجة.","w5":"اهتمام بتصميم الموبايل وعرض المنتجات.","w6":"نطاق شغل ودفعات وتسليم واضحين.","w7":"تواصل بالعربي والإنجليزي.","proc_eyebrow":"خطوات التنفيذ","proc_h2":"من أول رسالة لحد التسليم","pr1t":"مناقشة المشروع","pr1d":"بفهم البراند وكتالوج المنتجات والسوق المستهدف والمتطلبات وأهداف البزنس.","pr2t":"النطاق وعرض السعر","pr2d":"بنحدد الشغل والمخرجات والثيم المطلوب ونطاق إضافة المنتجات والمدة المتوقعة وتكلفة المشروع وأي استثناءات.","pr3t":"تصميم المتجر وتطويره","pr3d":"بنفذ المتجر على ثيم مناسب وبطبق التخصيصات المتفق عليها.","pr4t":"المراجعة والتعديل","pr4d":"بنراجع الصفحات والوظائف المتفق عليها، وبناخد ملاحظاتك وبنطبق التعديلات اللي يغطيها نطاق المشروع.","pr5t":"الدفعة الأخيرة والتسليم","pr5d":"بتتسدد الدفعة المتبقية عند التسليم، وبسلمك المتجر وأشرحلك مهام الإدارة المهمة.","proc_pay":"الدفع المعتاد: <bdi>50%</bdi> مقدم لبدء المشروع و<bdi>50%</bdi> عند التسليم.","rev_eyebrow":"التقييمات","rev_h2":"آراء العملاء","rev_sub":"آراء حقيقية من البراندات اللي اشتغلت معاها.","rev_prev":"التقييمات السابقة","rev_next":"التقييمات التالية","rev_region":"آراء العملاء","inv_eyebrow":"تكلفة المشروع","inv_h2":"أسعار بداية واضحة. وعروض أسعار على مقاس مشروعك.","inv_p":"مشاريع متاجر شوبيفاي الجديدة بتبدأ من <strong class=\"inv-hl\"><bdi>7,000 جنيه</bdi></strong>. والتكلفة النهائية بتعتمد على متطلبات البراند ونطاق المشروع ومستوى التخصيص المطلوب.","inv_cta":"ناقش براندك على واتساب","inv_p2":"قبل ما نبدأ التنفيذ هتستلم عرض واضح فيه المخرجات والمدة والتكلفة الإجمالية للمشروع.","inv_lic_t":"تكاليف إضافية:","inv_list_t":"إيه اللي بيحدد تكلفة مشروعك؟","f1":"الصفحات والأقسام المخصصة المطلوبة","f2":"عدد المنتجات والمجموعات","f3":"اختيار الثيم وترخيصه","f4":"متطلبات التصميم وتخصيصات الثيم","f5":"المميزات والوظائف الإضافية","f6":"التكاملات مع خدمات خارجية وتعقيد المشروع","inv_lic":"ثيمات شوبيفاي المدفوعة والتطبيقات والخدمات الخارجية مش مشمولة في أتعاب التنفيذ، إلا لو اتذكر صراحة في عرض السعر.","faq_eyebrow":"الأسئلة الشائعة","faq_h2":"أسئلة بتتكرر كتير","q1":"هل بتشتغل مع براندات الفاشون بس؟","a1":"لا. الفاشون هو المجال اللي عندي فيه أقوى نماذج أعمال حاليا، لكن أقدر أناقش مشاريع شوبيفاي لأنشطة أخرى حسب متطلبات المشروع.","q2":"هل بتبني متاجر شوبيفاي من الصفر؟","a2":"أيوه، ببدأ من إعداد متجر شوبيفاي وتصميمه وتطويره لحد التجهيز للإطلاق حسب نطاق المشروع المتفق عليه.","q3":"بتستخدم ثيمات مدفوعة ولا كود مخصص؟","a3":"بختار ثيم مناسب للمشروع وبخصصه حسب الحاجة. ولو المتطلبات محتاجة وظائف إضافية، بنفذها بالكود. وترخيص الثيم منفصل عن أتعابي ما لم يتم الاتفاق على غير ذلك.","q4":"هل الثيم المدفوع داخل في السعر؟","a4":"ترخيص الثيم المدفوع منفصل عن أتعاب التنفيذ، إلا لو اتذكر صراحة إنه مشمول في عرض السعر.","q5":"هل بتضيف المنتجات؟","a5":"إضافة المنتجات ممكن تدخل في المشروع ضمن عدد ونطاق متفق عليهم. لازم نحدد عدد المنتجات والبيانات المطلوبة قبل بداية المشروع.","q6":"المشروع بياخد قد إيه؟","a6":"المدة بتعتمد على تعقيد المشروع وحجم الكتالوج والتخصيصات المطلوبة وسرعة توفير المحتوى والرد على الملاحظات. هحدد مدة تقديرية في عرض السعر.","q7":"إزاي بيتم الدفع؟","a7":"نظام الدفع المعتاد عندي <bdi>50%</bdi> مقدم لبدء المشروع و<bdi>50%</bdi> عند التسليم.","q8":"هل التعديلات مشمولة؟","a8":"التعديلات بتتحدد حسب نطاق المشروع المتفق عليه، وعرض السعر هيوضح اللي مشمول.","q9":"هل في دعم بعد التسليم؟","a9":"بسلمك المتجر وأشرحلك الأساسيات عند الانتهاء. وأي فترة لإصلاح الأخطاء بعد التسليم وشروطها هتتحدد في عرض السعر. الصيانة الشهرية المستمرة مش مشمولة تلقائيا.","q10":"إزاي أعرف تكلفة مشروعي؟","a10":"ابعتلي على واتساب وصف مختصر للبراند والمنتجات والسوق المستهدف وإيه اللي محتاجه من متجرك على شوبيفاي.","cta_h2":"جاهز تبدأ متجرك على شوبيفاي؟","cta_p":"احكيلي عن البراند بتاعك واحتياجاتك، ونحدد مع بعض نطاق المشروع المناسب.","cta_final":"ناقش براندك على واتساب","cta_mail":"تفضل الإيميل؟","foot_role":"مطور شوبيفاي","foot_top":"الرجوع للأعلى","foot_name":"عادل عاطف إمام","nav_home":"الرئيسية","nav_brands":"البراندات","nav_reviews":"التقييمات","nav_invest":"التكلفة","nav_contact":"تواصل","stat1":"متجر شوبيفاي تم تنفيذه","stat2":"متجر يعمل حاليا","stat3":"دول اشتغلت فيها","brands_eyebrow":"براندات اشتغلت معاها","alt_f1":"متجر Flo على شوبيفاي معروض على لابتوب وموبايل","alt_f2":"متجر Thrive Fit على شوبيفاي معروض على لابتوب وموبايل","alt_f3":"متجر Versus على شوبيفاي معروض على لابتوب وموبايل","alt_f4":"متجر Little Buddy Wear على شوبيفاي معروض على لابتوب وموبايل","alt_f5":"متجر Glowear على شوبيفاي معروض على لابتوب وموبايل","p5_cat":"أزياء نسائية · مصر","p5_t":"Glo Wear — إعادة تصميم متجر شوبيفاي وتطويره","p5_d":"أعدت تصميم متجر Glo Wear وتطويره باستخدام Horizon، وربط خيارات الألوان للمنتج الواحد لتسهيل التنقل بين الألوان، وأعدت تنظيم تصنيفات المتجر لتجربة تسوق أوضح.","p5_f1":"ربط ألوان المنتج الواحد","p5_f2":"إعادة تنظيم التصنيفات","alt_p5":"متجر Glo Wear على شوبيفاي معروض على لابتوب وموبايل","more_stores":"متاجر إضافية","d_f1":"Flo هو وجهتك للموضة النسائية اللي بتجمع بين الأناقة والراحة.","d_f2":"Thrive Fit هو براندك للرياضة اللي بيمكن المرأة تتحرك بثقة. بنستخدم أقمشة عالية الجودة توفر التهوية والراحة اللازمة لأدائك الأمثل.","d_f3":"إحنا براند ملابس مصمم للشباب الساعي للتطور والبحث عن حاجة تعبر عنه ويقدر البساطة. منتجاتنا بتجمع بين الراحة والتصميم المينيمال عشان تديك المعادلة المطلوبة.","d_f4":"Little Buddy بيلبس الصغار براحة وألوان وبهجة. مصمم للعب والحضن ومغامرات كل يوم.","more_stores":"متاجر إضافية","c_f1":"أزياء نسائية · مصر","c_f2":"ملابس رياضية نسائية · مصر","c_f3":"أزياء رجالي · مصر","c_f4":"أزياء أطفال · الكويت"};
+var AR={"hv_prev":"المشروع السابق","hv_next":"المشروع التالي","c_j1": "أزياء نسائية", "d_j1": "متجر شوبيفاي على ثيم Kalles مع سكاشن مخصصة لتجربة شراء أنيقة وبسيطة.", "alt_j1": "متجر JAMILA على شوبيفاي معروض على لابتوب وموبايل", "c_m1": "ستريت وير", "d_m1": "متجر شوبيفاي لبراند هوديز وستريت وير، متصمم حوالين صور قوية وتصفح سهل.", "alt_m1": "متجر Mirele على شوبيفاي معروض على لابتوب وموبايل","pk3_name":"تطوير مخصص","pk2_name":"إعادة تصميم المتجر","pk1_name":"متجر جديد","pk_eyebrow":"الباقات","pk_h2":"اختار اللي يناسب براندك","pk_sub":"كل متجر مختلف، فالسعر النهائي بيعتمد على نطاق المشروع والتخصيصات اللي محتاجها.","pk_badge":"الأكثر طلبا","pk1_desc":"للبراندات اللي بتطلق متجرها على شوبيفاي.","pk_from":"بداية من","pk1_amt":"<bdi>7,000 جنيه</bdi>","pk1_note":"السعر النهائي بيعتمد على التخصيصات.","pk1_time":"جاهز عادة خلال 7–10 أيام.","pk1_f1":"تصميم المتجر وإعداده بالكامل","pk1_f2":"المنتجات والمجموعات","pk1_f3":"إعداد الدفع والشحن","pk1_f4":"متوافق مع الموبايل","pk1_f5":"تدريب على إدارة المتجر","pk1_f6":"30 يوم دعم لإصلاح الأخطاء","pk_cta1":"ابدأ دلوقتي","pk2_desc":"للبراندات اللي عندها متجر على شوبيفاي بالفعل.","pk2_amt":"حسب نطاق المشروع.","pk2_note":"بيتحدد السعر بعد مراجعة متجرك الحالي.","pk2_f1":"مراجعة متجرك الحالي","pk2_f2":"تصميم جديد للصفحات اللي تختارها","pk2_f3":"تحسين السرعة والموبايل","pk2_f4":"المنتجات والطلبات بتفضل زي ما هي","pk2_f5":"30 يوم دعم لإصلاح الأخطاء","pk_cta2":"اطلب عرض سعر","pk3_desc":"للمتطلبات الخاصة ومشاريع شوبيفاي المعقدة.","pk3_amt":"عرض سعر مخصص.","pk3_note":"بيتحدد السعر بعد مراجعة متطلباتك.","pk3_f1":"تصميم مخصص بالكامل","pk3_f2":"أقسام ومميزات مخصصة بالكود","pk3_f3":"التكاملات ونقل المتجر","pk3_f4":"تدريب على إدارة المتجر","pk3_f5":"30 يوم دعم لإصلاح الأخطاء","pk_support":"30 يوم دعم لإصلاح الأخطاء مشمولة. الميزات الجديدة وتغييرات التصميم والطلبات الإضافية بتتسعر بشكل منفصل.","pk_costs":"ثيمات شوبيفاي المدفوعة والتطبيقات والخدمات الخارجية مش مشمولة في أتعاب التنفيذ، إلا لو اتذكر صراحة في عرض السعر.","skip":"تخطي إلى المحتوى","brand_role":"مطور شوبيفاي","nav_services":"الخدمات","nav_work":"أعمال مختارة","nav_process":"خطوات التنفيذ","nav_faq":"الأسئلة الشائعة","wa_short":"واتساب","menu":"القائمة","hero_eyebrow":"مطور شوبيفاي","hero_h1":"متاجر شوبيفاي احترافية تناسب البراند بتاعك","hero_lead":"بصمم وبطور متاجر شوبيفاي تناسب هوية البراند واحتياجاته، مع عرض واضح للمنتجات، وتصميم متوافق مع الموبايل، وإمكانية تنفيذ تخصيصات برمجية حسب احتياج المشروع.","hero_cred":"عندي خبرة عملية في بناء متاجر لبراندات الفاشون، وبقدر أناقش مشاريع أنشطة مختلفة في التجارة الإلكترونية حسب متطلبات كل مشروع.","cta_primary":"ناقش براندك على واتساب","cta_secondary":"شوف نماذج من أعمالي","chip1":"أعمال في التجارة الإلكترونية للفاشون","chip2":"مفتوح لأي نشاط تجاري","chip3":"عربي وإنجليزي · دعم RTL","hv_group":"المشاريع المختارة","alt_p1":"متجر NALA Kids على شوبيفاي معروض على لابتوب وموبايل","alt_p2":"متجر HIBTAM على شوبيفاي معروض على لابتوب وموبايل","alt_p3":"متجر CIEL على شوبيفاي معروض على لابتوب وموبايل","alt_p4":"متجر MOVEON على شوبيفاي معروض على لابتوب وموبايل","svc_eyebrow":"الخدمات","svc_h2":"إيه اللي هتحصل عليه","svc_sub":"تصميم وتطوير متجر شوبيفاي متكامل، مبني على هوية البراند ومنتجاته.","s1t":"إعداد متجر شوبيفاي","s1a":"تجهيز أساس المتجر وإعداداته.","s1b":"إعداد الثيم والصفحات الأساسية للمتجر.","s1c":"التجهيز للإطلاق حسب النطاق المتفق عليه.","s2t":"تصميم متجر يعبر عن البراند","s2a":"تخصيص الثيم ليناسب هوية البراند.","s2b":"مظهر بصري متناسق.","s2c":"تجربة متوافقة مع كل الأجهزة.","s3t":"عرض المنتجات","s3a":"تنظيم واضح للمنتجات والتصنيفات.","s3b":"تخصيص صفحة المنتج عند الحاجة.","s3c":"تحسين عرض الأنواع والألوان حسب الحاجة.","s4t":"تخصيص ثيمات شوبيفاي","s4a":"تعديل أقسام الثيم الحالية.","s4b":"إضافة أو تعديل أقسام بالكود عند الضرورة.","s4c":"تطويع المتجر ليناسب احتياجات البراند.","s5t":"دعم العربية واتجاه RTL","s5a":"دعم المتجر باللغة العربية عند الحاجة.","s5b":"ضبط التصميم لاتجاه الكتابة من اليمين لليسار.","s5c":"تحسين الخطوط وتوافق الثيم.","s6t":"التجهيز للإطلاق","s6a":"اختبار وظائف المتجر المتفق عليها.","s6b":"مراجعة تجربة الاستخدام على الموبايل.","s6c":"تسليم المتجر وشرح طريقة إدارته.","svc_note":"نطاق كل مشروع بيتحدد بشكل نهائي في عرض السعر.","work_eyebrow":"أعمال مختارة","work_h2":"متاجر شوبيفاي حقيقية نفذتها","work_sub":"الفاشون هو المجال اللي عندي فيه أقوى نماذج أعمال، وبناقش كمان مشاريع شوبيفاي في مجالات تانية من التجارة الإلكترونية.","l_theme":"الثيم","l_role":"دوري","role_scratch":"بناء المتجر بالكامل من الصفر","role_redesign":"إعادة تصميم المتجر وتطويره","visit":"زيارة المتجر","p1_cat":"أزياء أطفال · مصر","p1_t":"NALA Kids — تطوير متجر شوبيفاي ودعم العربية واتجاه RTL","p1_d":"أنشأت متجر NALA Kids من البداية باستخدام Horizon، مع دعم اللغة العربية واتجاه RTL، وتغيير الخط بدون تطبيق إضافي، وتخصيص أجزاء عديدة من الثيم بالكود.","p1_f1":"دعم العربية + RTL","p1_f2":"تغيير الخط بدون تطبيق إضافي","p2_cat":"أزياء نسائية · مصر","p2_t":"HIBTAM — تطوير متجر شوبيفاي وتجربة منتج مخصصة","p2_d":"أنشأت متجر HIBTAM من البداية باستخدام Horizon، مع تخصيص أجزاء متعددة من الثيم بالكود، وربط ألوان المنتج الواحد، ودعم اللغة العربية واتجاه RTL.","p2_f1":"ربط ألوان المنتج الواحد","p2_f2":"دعم العربية + RTL","p3_cat":"أزياء نسائية · مصر","p3_t":"CIEL — تطوير متجر شوبيفاي وتنقل سهل بين ألوان المنتج","p3_d":"أنشأت متجر CIEL من البداية باستخدام Horizon، مع تخصيص أجزاء عديدة من الثيم بالكود وربط ألوان المنتج الواحد لتسهيل الانتقال بين الألوان.","p3_f1":"ربط ألوان المنتج الواحد","p3_f2":"تخصيص الثيم بالكود","p4_cat":"ملابس رياضية · الكويت","p4_t":"MOVEON — تطوير متجر شوبيفاي وصور منتجات مخصصة حسب اللون","p4_d":"أنشأت متجر MOVEON من البداية باستخدام Minimog، مع تخصيص عرض صور المنتجات لفصل الصور حسب اللون المختار.","p4_f1":"فصل صور المنتج حسب اللون","work_note":"الوصف بيعكس الشغل اللي نفذته أثناء كل مشروع، وممكن أصحاب المتاجر يكونوا عدلوا في متاجرهم بعد كده.","why_eyebrow":"ليه تشتغل معايا","why_h2":"طريقة عملية في بناء متجرك","me_name":"عادل عاطف إمام","me_role":"مطور شوبيفاي","me_loc":"من مصر · بشتغل مع براندات في مصر والخليج","alt_me":"عادل عاطف إمام","w1":"إعداد متجر شوبيفاي بالكامل من البداية للنهاية.","w2":"خبرة في متاجر براندات فاشون حقيقية.","w3":"تخصيص الثيم حسب احتياج البراند.","w4":"تحسينات عملية بالكود عند الحاجة.","w5":"اهتمام بتصميم الموبايل وعرض المنتجات.","w6":"نطاق شغل ودفعات وتسليم واضحين.","w7":"تواصل بالعربي والإنجليزي.","proc_eyebrow":"خطوات التنفيذ","proc_h2":"من أول رسالة لحد التسليم","pr1t":"مناقشة المشروع","pr1d":"بفهم البراند وكتالوج المنتجات والسوق المستهدف والمتطلبات وأهداف البزنس.","pr2t":"النطاق وعرض السعر","pr2d":"بنحدد الشغل والمخرجات والثيم المطلوب ونطاق إضافة المنتجات والمدة المتوقعة وتكلفة المشروع وأي استثناءات.","pr3t":"تصميم المتجر وتطويره","pr3d":"بنفذ المتجر على ثيم مناسب وبطبق التخصيصات المتفق عليها.","pr4t":"المراجعة والتعديل","pr4d":"بنراجع الصفحات والوظائف المتفق عليها، وبناخد ملاحظاتك وبنطبق التعديلات اللي يغطيها نطاق المشروع.","pr5t":"الدفعة الأخيرة والتسليم","pr5d":"بتتسدد الدفعة المتبقية عند التسليم، وبسلمك المتجر وأشرحلك مهام الإدارة المهمة.","proc_pay":"الدفع المعتاد: <bdi>50%</bdi> مقدم لبدء المشروع و<bdi>50%</bdi> عند التسليم.","rev_eyebrow":"التقييمات","rev_h2":"آراء العملاء","rev_sub":"آراء حقيقية من البراندات اللي اشتغلت معاها.","rev_prev":"التقييمات السابقة","rev_next":"التقييمات التالية","rev_region":"آراء العملاء","inv_eyebrow":"تكلفة المشروع","inv_h2":"أسعار بداية واضحة. وعروض أسعار على مقاس مشروعك.","inv_p":"مشاريع متاجر شوبيفاي الجديدة بتبدأ من <strong class=\"inv-hl\"><bdi>7,000 جنيه</bdi></strong>. والتكلفة النهائية بتعتمد على متطلبات البراند ونطاق المشروع ومستوى التخصيص المطلوب.","inv_cta":"ناقش براندك على واتساب","inv_p2":"قبل ما نبدأ التنفيذ هتستلم عرض واضح فيه المخرجات والمدة والتكلفة الإجمالية للمشروع.","inv_lic_t":"تكاليف إضافية:","inv_list_t":"إيه اللي بيحدد تكلفة مشروعك؟","f1":"الصفحات والأقسام المخصصة المطلوبة","f2":"عدد المنتجات والمجموعات","f3":"اختيار الثيم وترخيصه","f4":"متطلبات التصميم وتخصيصات الثيم","f5":"المميزات والوظائف الإضافية","f6":"التكاملات مع خدمات خارجية وتعقيد المشروع","inv_lic":"ثيمات شوبيفاي المدفوعة والتطبيقات والخدمات الخارجية مش مشمولة في أتعاب التنفيذ، إلا لو اتذكر صراحة في عرض السعر.","faq_eyebrow":"الأسئلة الشائعة","faq_h2":"أسئلة بتتكرر كتير","q1":"هل بتشتغل مع براندات الفاشون بس؟","a1":"لا. الفاشون هو المجال اللي عندي فيه أقوى نماذج أعمال حاليا، لكن أقدر أناقش مشاريع شوبيفاي لأنشطة أخرى حسب متطلبات المشروع.","q2":"هل بتبني متاجر شوبيفاي من الصفر؟","a2":"أيوه، ببدأ من إعداد متجر شوبيفاي وتصميمه وتطويره لحد التجهيز للإطلاق حسب نطاق المشروع المتفق عليه.","q3":"بتستخدم ثيمات مدفوعة ولا كود مخصص؟","a3":"بختار ثيم مناسب للمشروع وبخصصه حسب الحاجة. ولو المتطلبات محتاجة وظائف إضافية، بنفذها بالكود. وترخيص الثيم منفصل عن أتعابي ما لم يتم الاتفاق على غير ذلك.","q4":"هل الثيم المدفوع داخل في السعر؟","a4":"ترخيص الثيم المدفوع منفصل عن أتعاب التنفيذ، إلا لو اتذكر صراحة إنه مشمول في عرض السعر.","q5":"هل بتضيف المنتجات؟","a5":"إضافة المنتجات ممكن تدخل في المشروع ضمن عدد ونطاق متفق عليهم. لازم نحدد عدد المنتجات والبيانات المطلوبة قبل بداية المشروع.","q6":"المشروع بياخد قد إيه؟","a6":"المدة بتعتمد على تعقيد المشروع وحجم الكتالوج والتخصيصات المطلوبة وسرعة توفير المحتوى والرد على الملاحظات. هحدد مدة تقديرية في عرض السعر.","q7":"إزاي بيتم الدفع؟","a7":"نظام الدفع المعتاد عندي <bdi>50%</bdi> مقدم لبدء المشروع و<bdi>50%</bdi> عند التسليم.","q8":"هل التعديلات مشمولة؟","a8":"التعديلات بتتحدد حسب نطاق المشروع المتفق عليه، وعرض السعر هيوضح اللي مشمول.","q9":"هل في دعم بعد التسليم؟","a9":"بسلمك المتجر وأشرحلك الأساسيات عند الانتهاء. وأي فترة لإصلاح الأخطاء بعد التسليم وشروطها هتتحدد في عرض السعر. الصيانة الشهرية المستمرة مش مشمولة تلقائيا.","q10":"إزاي أعرف تكلفة مشروعي؟","a10":"ابعتلي على واتساب وصف مختصر للبراند والمنتجات والسوق المستهدف وإيه اللي محتاجه من متجرك على شوبيفاي.","cta_h2":"جاهز تبدأ متجرك على شوبيفاي؟","cta_p":"احكيلي عن البراند بتاعك واحتياجاتك، ونحدد مع بعض نطاق المشروع المناسب.","cta_final":"ناقش براندك على واتساب","cta_mail":"تفضل الإيميل؟","foot_role":"مطور شوبيفاي","foot_top":"الرجوع للأعلى","foot_name":"عادل عاطف إمام","nav_home":"الرئيسية","nav_brands":"البراندات","nav_reviews":"التقييمات","nav_invest":"التكلفة","nav_contact":"تواصل","stat1":"متجر شوبيفاي تم تنفيذه","stat2":"متجر يعمل حاليا","stat3":"دول اشتغلت فيها","brands_eyebrow":"براندات اشتغلت معاها","alt_f1":"متجر Flo على شوبيفاي معروض على لابتوب وموبايل","alt_f2":"متجر Thrive Fit على شوبيفاي معروض على لابتوب وموبايل","alt_f3":"متجر Versus على شوبيفاي معروض على لابتوب وموبايل","alt_f4":"متجر Little Buddy Wear على شوبيفاي معروض على لابتوب وموبايل","alt_f5":"متجر Glowear على شوبيفاي معروض على لابتوب وموبايل","p5_cat":"أزياء نسائية · مصر","p5_t":"Glo Wear — إعادة تصميم متجر شوبيفاي وتطويره","p5_d":"أعدت تصميم متجر Glo Wear وتطويره باستخدام Horizon، وربط خيارات الألوان للمنتج الواحد لتسهيل التنقل بين الألوان، وأعدت تنظيم تصنيفات المتجر لتجربة تسوق أوضح.","p5_f1":"ربط ألوان المنتج الواحد","p5_f2":"إعادة تنظيم التصنيفات","alt_p5":"متجر Glo Wear على شوبيفاي معروض على لابتوب وموبايل","more_stores":"متاجر إضافية","d_f1":"Flo هو وجهتك للموضة النسائية اللي بتجمع بين الأناقة والراحة.","d_f2":"Thrive Fit هو براندك للرياضة اللي بيمكن المرأة تتحرك بثقة. بنستخدم أقمشة عالية الجودة توفر التهوية والراحة اللازمة لأدائك الأمثل.","d_f3":"إحنا براند ملابس مصمم للشباب الساعي للتطور والبحث عن حاجة تعبر عنه ويقدر البساطة. منتجاتنا بتجمع بين الراحة والتصميم المينيمال عشان تديك المعادلة المطلوبة.","d_f4":"Little Buddy بيلبس الصغار براحة وألوان وبهجة. مصمم للعب والحضن ومغامرات كل يوم.","more_stores":"متاجر إضافية","c_f1":"أزياء نسائية · مصر","c_f2":"ملابس رياضية نسائية · مصر","c_f3":"أزياء رجالي · مصر","c_f4":"أزياء أطفال · الكويت"};
 
 /* ---------- language ---------- */
 var lang="en",missing=[];
@@ -918,43 +920,147 @@ nav.addEventListener("click",function(e){
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeMenu()});
 window.addEventListener("resize",function(){if(window.innerWidth>1023)closeMenu()});
 
-/* ---------- hero: rotate the real project mockups ---------- */
+/* ---------- project mockups ----------
+   Each mockup scrolls the WHOLE page once at a slow, constant speed (Web Animations API = runs on the compositor, so no jitter),
+   waits a moment at the bottom, snaps back to the top and rests. A click / tap / Enter on the mockup replays it. ---------- */
 var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-var hv=[].slice.call(document.querySelectorAll(".hv-img"));
+var MK={speed:.12,ramp:1.8,dwell:1100};  /* speed = share of the mockup width scrolled per second (lower = slower) */
+function Mock(el){
+  var self=this;
+  self.el=el;self.shots=[].slice.call(el.querySelectorAll(".mk-pg"));
+  self.anims=[];self.state="idle";self.timer=0;self.tok=0;self.played=false;
+  var scr=el.querySelector(".mk-lap .mk-scr");
+  if(scr){var b=document.createElement("span");b.className="mk-replay";b.setAttribute("aria-hidden","true");
+    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>';scr.appendChild(b)}
+  el.setAttribute("role","button");el.tabIndex=0;
+  el.addEventListener("click",function(){if(self.state==="idle")self.play()});
+  el.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&self.state==="idle"){e.preventDefault();self.play()}});
+}
+Mock.prototype.loaded=function(cb){
+  var pend=this.shots.filter(function(im){
+    if(im.dataset.src&&!im.getAttribute("src"))im.src=im.dataset.src;
+    return !(im.complete&&im.naturalWidth>0);
+  });
+  if(!pend.length)return cb();
+  var n=pend.length,fin=function(){if(--n<=0)cb()};
+  pend.forEach(function(im){im.addEventListener("load",fin,{once:true});im.addEventListener("error",fin,{once:true})});
+};
+Mock.prototype.reset=function(){
+  clearTimeout(this.timer);this.tok++;
+  this.anims.forEach(function(a){try{a.cancel()}catch(e){}});this.anims=[];
+  this.el.classList.remove("playing");this.state="idle";
+};
+Mock.prototype.play=function(onEnd,keep){
+  var self=this;self.reset();var tok=self.tok;self.played=true;self.state="loading";
+  self.loaded(function(){
+    if(tok!==self.tok)return;
+    var w=self.el.clientWidth;
+    var ds=self.shots.map(function(im){return Math.max(0,im.offsetHeight-im.parentNode.clientHeight)});
+    var D=Math.max.apply(null,ds);
+    if(!w||D<4){self.finish(tok,onEnd,keep);return}
+    var T=Math.max(8,D/(w*MK.speed)),r=Math.min(MK.ramp,T/4),a=r/T,pa=r/(2*(T-r));
+    function tr(y){return "translate3d(0,"+(-y).toFixed(2)+"px,0)"}
+    var longest=null,ld=-1;
+    self.state="playing";self.el.classList.add("playing");
+    self.shots.forEach(function(im,i){
+      var d=ds[i];if(d<2)return;
+      /* ease in (quadratic) -> constant speed -> ease out (quadratic): smooth start and stop, steady in between */
+      var an=im.animate([
+        {offset:0,transform:tr(0),easing:"cubic-bezier(.3333,0,.6667,.3333)"},
+        {offset:a,transform:tr(pa*d),easing:"linear"},
+        {offset:1-a,transform:tr((1-pa)*d),easing:"cubic-bezier(.3333,.6667,.6667,1)"},
+        {offset:1,transform:tr(d)}
+      ],{duration:T*1000,fill:"forwards"});
+      self.anims.push(an);if(d>ld){ld=d;longest=an}
+    });
+    longest.onfinish=function(){self.finish(tok,onEnd,keep)};
+  });
+};
+Mock.prototype.finish=function(tok,onEnd,keep){
+  var self=this;self.state="dwell";
+  self.timer=setTimeout(function(){
+    if(tok!==self.tok)return;
+    if(keep){self.state="ended"}else{self.reset()}   /* snap straight back to the top, no scrolling */
+    self.el.classList.add("done");
+    if(onEnd)onEnd(self);
+  },MK.dwell);
+};
+Mock.prototype.pause=function(){if(this.state==="playing"){this.anims.forEach(function(a){a.pause()});this.state="paused"}};
+Mock.prototype.resume=function(){if(this.state==="paused"){this.anims.forEach(function(a){a.play()});this.state="playing"}};
+
+var mocks=[].slice.call(document.querySelectorAll(".mock")).map(function(el){return new Mock(el)});
+if(reduce)mocks.forEach(function(m){m.el.classList.add("done")});
+
+/* project cards: start once, when the mockup is mostly on screen; pause while it is off screen */
+if("IntersectionObserver" in window){
+  var mio=new IntersectionObserver(function(es){es.forEach(function(e){
+    var m=e.target.__mock;if(!m)return;
+    var r=e.intersectionRatio;
+    if(r>=.55&&!m.played&&m.state==="idle"&&!reduce)m.play();
+    else if(r<.12)m.pause();
+    else if(r>=.3)m.resume();
+  })},{threshold:[0,.12,.3,.55]});
+  mocks.forEach(function(m){if(!m.el.closest(".hv")){m.el.__mock=m;mio.observe(m.el)}});
+}
+
+/* ---------- hero: the featured stores as live mockups; moves on by itself when a page has finished scrolling ---------- */
+var hvSlides=[].slice.call(document.querySelectorAll(".hv-slide"));
+var hvMocks=hvSlides.map(function(sl){var m=sl.querySelector(".mock").__mock||mocks.filter(function(x){return x.el===sl.querySelector(".mock")})[0];return m});
 var dots=[].slice.call(document.querySelectorAll(".hv-dots button"));
 var cap=document.getElementById("hvCap");
 var PROJ=[["glowear","Glo Wear","Horizon"],["nala","NALA Kids","Horizon"],["hibtam","HIBTAM","Horizon"],["ciel","CIEL","Horizon"],["moveon","MOVEON","Minimog"]];
-var hi=0,want=0,timer=null;
-function heroLoad(im){if(!im.dataset.src||im.getAttribute("src"))return;if(im.dataset.srcset)im.srcset=im.dataset.srcset;if(im.dataset.sizes)im.sizes=im.dataset.sizes;im.src=im.dataset.src}
-function heroReady(im){return im.complete&&im.naturalWidth>0}
-/* the 4 non-LCP hero images start loading only after window "load" (idle), so they never compete with the LCP image */
-function heroLoadRest(){(window.requestIdleCallback||function(f){setTimeout(f,200)})(function(){hv.forEach(heroLoad)})}
-if(document.readyState==="complete")heroLoadRest();else window.addEventListener("load",heroLoadRest);
+var N=PROJ.length,hi=0,hTok=0,heroT=0,heroManual=false,heroVisible=true,heroPending=false;
 function updateCap(){
   var p=PROJ[hi];
   cap.textContent=lang==="ar"?p[1]+" · ثيم "+p[2]:p[1]+" · "+p[2]+" theme";
   cap.setAttribute("href","#p-"+p[0]);
 }
-function apply(i){
-  hi=i;
-  hv.forEach(function(im,k){im.classList.toggle("on",k===i)});
-  dots.forEach(function(d,k){d.setAttribute("aria-current",k===i?"true":"false")});
+function heroShow(i,manual){
+  if(manual)heroManual=true;   /* the visitor picked a store: let it play once and stay on it */
+  var old=hi;hi=(i%N+N)%N;var tok=++hTok;
+  hvSlides.forEach(function(sl,k){sl.classList.toggle("on",k===hi)});
+  dots.forEach(function(d,k){d.setAttribute("aria-current",k===hi?"true":"false")});
   updateCap();
+  clearTimeout(heroT);
+  if(old!==hi){var om=hvMocks[old];setTimeout(function(){if(hi!==old)om.reset()},800)}
+  var m=hvMocks[hi];m.reset();
+  if(reduce)return;
+  heroT=setTimeout(function(){
+    if(tok!==hTok)return;
+    if(!heroVisible){heroPending=true;return}
+    m.play(function(){
+      if(tok!==hTok)return;
+      if(heroManual)m.reset();else heroShow(hi+1,false);
+    },true);
+  },650);
 }
-/* never swap to an image that has not finished loading: the current frame stays until the next one is ready */
-function show(i){
-  want=i;var im=hv[i];
-  if(heroReady(im)){apply(i);return}
-  heroLoad(im);
-  im.addEventListener("load",function(){if(want===i)apply(i)},{once:true});
+dots.forEach(function(d,k){d.addEventListener("click",function(){heroShow(k,true)})});
+document.querySelector(".hv-arrow.prev").addEventListener("click",function(){heroShow(hi-1,true)});
+document.querySelector(".hv-arrow.next").addEventListener("click",function(){heroShow(hi+1,true)});
+/* the 4 non-first hero slides load only after window "load" (idle), so they never compete with the LCP image */
+function heroLoadRest(){(window.requestIdleCallback||function(f){setTimeout(f,200)})(function(){
+  [].forEach.call(document.querySelectorAll(".hv-slide img[data-src]"),function(im){if(!im.getAttribute("src"))im.src=im.dataset.src});
+})}
+if(document.readyState==="complete")heroLoadRest();else window.addEventListener("load",heroLoadRest);
+if("IntersectionObserver" in window){
+  new IntersectionObserver(function(es){
+    heroVisible=es[0].isIntersecting;var m=hvMocks[hi];
+    if(!heroVisible)m.pause();
+    else{m.resume();if(heroPending){heroPending=false;heroShow(hi,false)}}
+  },{threshold:.25}).observe(document.querySelector(".hv"));
 }
-function startRot(){if(reduce)return;stopRot();timer=setInterval(function(){show((hi+1)%PROJ.length)},5000)}
-function stopRot(){if(timer){clearInterval(timer);timer=null}}
-dots.forEach(function(d,k){d.addEventListener("click",function(){show(k);startRot()})});
-var hvBox=document.querySelector(".hv");
-hvBox.addEventListener("mouseenter",stopRot);hvBox.addEventListener("mouseleave",startRot);
-hvBox.addEventListener("focusin",stopRot);hvBox.addEventListener("focusout",startRot);
-startRot();
+heroShow(0,false);
+
+/* a width change re-measures everything: put the mockups back to rest (the hero restarts its current store) */
+var mkW=window.innerWidth,mkT=0;
+window.addEventListener("resize",function(){
+  clearTimeout(mkT);
+  mkT=setTimeout(function(){
+    if(window.innerWidth===mkW)return;mkW=window.innerWidth;
+    mocks.forEach(function(m){if(m.state!=="idle"){m.reset();m.el.classList.add("done")}});
+    heroShow(hi,false);
+  },250);
+});
 
 /* ---------- reviews: infinite auto carousel (drag / swipe / arrows) ---------- */
 var wrap=document.getElementById("revWrap"),track=document.getElementById("revTrack");
@@ -1027,24 +1133,6 @@ document.getElementById("revPrev").addEventListener("click",function(){nudge(-1)
 document.getElementById("revNext").addEventListener("click",function(){nudge(1)});
 
 
-/* ---------- project mockups: mouse = scrolls while the visitor is on that store (CSS :hover);
-   touch = only the mockup crossing the middle of the screen scrolls ---------- */
-(function(){
-  if(!window.matchMedia("(hover:none)").matches)return;
-  var ms=[].slice.call(document.querySelectorAll(".mock")),cur=null,tk=false;
-  function pick(){
-    tk=false;var vh=window.innerHeight,best=null,bd=1e9;
-    ms.forEach(function(m){var r=m.getBoundingClientRect();if(r.bottom<0||r.top>vh)return;var d=Math.abs(r.top+r.height/2-vh/2);if(d<bd){bd=d;best=m}});
-    if(best&&bd>vh*0.3)best=null;            /* only when it is near the middle of the screen */
-    if(best===cur)return;
-    if(cur)cur.classList.remove("on");
-    cur=best;if(cur)cur.classList.add("on");
-  }
-  function sched(){if(!tk){tk=true;setTimeout(pick,120)}}
-  window.addEventListener("scroll",sched,{passive:true});window.addEventListener("resize",sched);
-  pick();
-})();
-
 /* ---------- stats count-up (starts only when the section scrolls into view; runs once; shows every integer) ---------- */
 var statRow=document.querySelector(".stats-row");
 if(statRow&&"IntersectionObserver" in window&&!reduce){
@@ -1073,7 +1161,7 @@ if(statRow&&"IntersectionObserver" in window&&!reduce){
 }
 
 /* ---------- deck fit: unpin cards taller than the viewport so content stays reachable ---------- */
-var deckCards=[].slice.call(document.querySelectorAll(".projs>.proj,.mini-grid>.mini"));
+var deckCards=[].slice.call(document.querySelectorAll(".projs>.proj"));
 var deckW=window.innerWidth,deckVh=window.innerHeight;
 function deckFit(){
   /* use the smallest viewport height seen at this width so the mobile address bar showing/hiding never flips cards between pinned and static mid-scroll */
